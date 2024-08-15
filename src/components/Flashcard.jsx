@@ -1,29 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import './Flashcard.css'; // Import CSS for styling
 
 function Flashcard() {
   const { id } = useParams();
-  const [flashcard, setFlashcard] = useState(null);
+  const [flashcards, setFlashcards] = useState([]);
+  const [revealedIndex, setRevealedIndex] = useState(null);
 
   useEffect(() => {
     axios.get('/db.json')
-  .then(response => {
-    const flashcard = response.data.find(item => item.id === 1);
-    setFlashcard(flashcard);
-  })
-  .catch(error => {
-    console.error('Error fetching flashcard:', error);
-  });
-
+      .then(response => {
+        setFlashcards(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching flashcards:', error);
+      });
   }, [id]);
 
-  if (!flashcard) return <p>Loading...</p>;
+  const handleReveal = (index) => {
+    setRevealedIndex(index === revealedIndex ? null : index);
+  };
+
+  if (!flashcards.length) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h1>{flashcard.question}</h1>
-      <p>{flashcard.answer}</p>
+    <div className="flashcard-container">
+      {flashcards.map((flashcard, index) => (
+        <div key={flashcard.id} className="flashcard">
+          <h2>{flashcard.question}</h2>
+          {revealedIndex === index && <p>{flashcard.answer}</p>}
+          <button onClick={() => handleReveal(index)}>
+            {revealedIndex === index ? 'Hide Answer' : 'Reveal Answer'}
+          </button>
+        </div>
+      ))}
     </div>
   );
 }
