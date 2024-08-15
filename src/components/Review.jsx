@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 function Review() {
   const location = useLocation();
-  const markedForReview = location.state?.markedForReview || [];
+  const markedForReview = location.state?.markedForReview || []; // Default to an empty array
 
   return (
     <div className="review-container">
@@ -12,8 +12,8 @@ function Review() {
         <p>No flashcards marked for review.</p>
       ) : (
         <div>
-          {markedForReview.map((flashcard, index) => (
-            <div key={index} className="flashcard">
+          {markedForReview.map((flashcard) => (
+            <div key={flashcard.id} className="flashcard">
               <h2>{flashcard.question}</h2>
               <p>{flashcard.answer}</p>
             </div>

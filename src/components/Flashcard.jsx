@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import './Flashcard.css';
 
 function Flashcard() {
@@ -22,7 +23,15 @@ function Flashcard() {
   };
 
   const handleMarkForReview = (flashcard) => {
-    setMarkedForReview([...markedForReview, flashcard]);
+    if (markedForReview.includes(flashcard.id)) {
+      setMarkedForReview(markedForReview.filter(id => id !== flashcard.id));
+    } else {
+      setMarkedForReview([...markedForReview, flashcard.id]);
+    }
+  };
+
+  const getMarkedFlashcards = () => {
+    return flashcards.filter(card => markedForReview.includes(card.id));
   };
 
   if (!flashcards.length) return <p>Loading...</p>;
@@ -37,10 +46,18 @@ function Flashcard() {
             {revealedIndex === index ? 'Hide Answer' : 'Reveal Answer'}
           </button>
           <button onClick={() => handleMarkForReview(flashcard)}>
-            Mark for Review
+            {markedForReview.includes(flashcard.id) ? 'Unmark for Review' : 'Mark for Review'}
           </button>
         </div>
       ))}
+      <Link
+        to={{
+          pathname: '/review',
+          state: { markedForReview: getMarkedFlashcards() }, // Pass marked flashcards
+        }}
+      >
+        <button>Go to Review</button>
+      </Link>
     </div>
   );
 }
