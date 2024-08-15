@@ -7,9 +7,15 @@ function Flashcard() {
   const [flashcard, setFlashcard] = useState(null);
 
   useEffect(() => {
-    axios.get(`https://api.example.com/flashcards/${id}`) // Replace with your API endpoint
-      .then(response => setFlashcard(response.data))
-      .catch(error => console.error('Error fetching flashcard:', error));
+    axios.get('/db.json')
+  .then(response => {
+    const flashcard = response.data.find(item => item.id === 1);
+    setFlashcard(flashcard);
+  })
+  .catch(error => {
+    console.error('Error fetching flashcard:', error);
+  });
+
   }, [id]);
 
   if (!flashcard) return <p>Loading...</p>;

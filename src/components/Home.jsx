@@ -6,7 +6,7 @@ function Home() {
   const [flashcards, setFlashcards] = useState([]);
 
   useEffect(() => {
-    axios.get('https://api.example.com/flashcards') // Replace with your API endpoint
+    axios.get('/db.json')
       .then(response => setFlashcards(response.data))
       .catch(error => console.error('Error fetching flashcards:', error));
   }, []);
