@@ -37,9 +37,10 @@ function Flashcard() {
   if (!flashcards.length) return <p>Loading...</p>;
 
   return (
-    <div className="flashcard-container">
+    <div class="flashcard-container">
+      <h1>Flashcards</h1>
       {flashcards.map((flashcard, index) => (
-        <div key={flashcard.id} className="flashcard">
+        <div key={flashcard.id} class="flashcard">
           <h2>{flashcard.question}</h2>
           {revealedIndex === index && <p>{flashcard.answer}</p>}
           <button onClick={() => handleReveal(index)}>
