@@ -1,15 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './Home.css';
 
 function Home() {
   return (
-    <div>
+    <div id='home'>
       <h1>Welcome to Flashcards</h1>
-      <div>
-        <Link to="/flashcards">All Flashcards</Link>
+      <div class="home-link">
+        <Link to="/flashcards" class="button">All Flashcards</Link>
       </div>
       <div>
-        <Link to="/review">Review Marked Flashcards</Link>
+        <Link to="/review" class="button">Review Marked Flashcards</Link>
       </div>
     </div>
   );
