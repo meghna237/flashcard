@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 function Review() {
-  const [flashcards, setFlashcards] = useState([]);
-
-  useEffect(() => {
-    axios.get('/db.json')
-      .then(response => setFlashcards(response.data))
-      .catch(error => console.error('Error fetching flashcards:', error));
-  }, []);
+  const location = useLocation();
+  const markedForReview = location.state?.markedForReview || [];
 
   return (
-    <div>
-      <h1>Review Flashcards</h1>
-      <ul>
-        {flashcards.map(card => (
-          <li key={card.id}>
-            <h3>{card.question}</h3>
-            <p>{card.answer}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="review-container">
+      <h1>Flashcards Marked for Review</h1>
+      {markedForReview.length === 0 ? (
+        <p>No flashcards marked for review.</p>
+      ) : (
+        <div>
+          {markedForReview.map((flashcard, index) => (
+            <div key={index} className="flashcard">
+              <h2>{flashcard.question}</h2>
+              <p>{flashcard.answer}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

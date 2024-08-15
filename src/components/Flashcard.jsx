@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import './Flashcard.css'; // Import CSS for styling
+import './Flashcard.css';
 
 function Flashcard() {
-  const { id } = useParams();
   const [flashcards, setFlashcards] = useState([]);
   const [revealedIndex, setRevealedIndex] = useState(null);
+  const [markedForReview, setMarkedForReview] = useState([]);
 
   useEffect(() => {
     axios.get('/db.json')
@@ -16,10 +15,14 @@ function Flashcard() {
       .catch(error => {
         console.error('Error fetching flashcards:', error);
       });
-  }, [id]);
+  }, []);
 
   const handleReveal = (index) => {
     setRevealedIndex(index === revealedIndex ? null : index);
+  };
+
+  const handleMarkForReview = (flashcard) => {
+    setMarkedForReview([...markedForReview, flashcard]);
   };
 
   if (!flashcards.length) return <p>Loading...</p>;
@@ -32,6 +35,9 @@ function Flashcard() {
           {revealedIndex === index && <p>{flashcard.answer}</p>}
           <button onClick={() => handleReveal(index)}>
             {revealedIndex === index ? 'Hide Answer' : 'Reveal Answer'}
+          </button>
+          <button onClick={() => handleMarkForReview(flashcard)}>
+            Mark for Review
           </button>
         </div>
       ))}
