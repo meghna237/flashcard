@@ -6,19 +6,22 @@ import Review from './components/Review';
 import Subjects from './components/Subject';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
+import { UserProvider } from './context/UserContext'; // Import UserProvider
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route exact path="/" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/subjects" element={<Subjects />} />
-        <Route path="/flashcards" element={<Flashcard />} />
-        <Route path="/review" element={<Review />} />
-      </Routes>
-    </Router>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route exact path="/" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/subjects" element={<Subjects />} />
+          <Route path="/flashcards" element={<Flashcard />} />
+          <Route path="/review" element={<Review />} />
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 

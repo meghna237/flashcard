@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './Login.css'
+import './styles/Login.css';
+import { UserContext } from '../context/UserContext';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate(); // Use useHistory hook to navigate
+    const navigate = useNavigate();
+    const { setUserID } = useContext(UserContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,6 +20,7 @@ function Login() {
             });
 
             if (response.data.success) {
+                setUserID(response.data.userID);
                 navigate('/subjects'); // Redirect to the subjects page on successful login
             } else {
                 alert('Login failed. Please check your username and password.');

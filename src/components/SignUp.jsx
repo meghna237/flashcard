@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './SignUp.css';
+import './styles/SignUp.css';
 
 function SignUp() {
   const [username, setUsername] = useState('');
@@ -25,7 +25,7 @@ function SignUp() {
 
       if (response.data.success) {
         alert('Sign up successful! Please log in.');
-        navigate('/login');
+        navigate('/');
       } else {
         alert('Sign up failed. Please try again.');
       }

@@ -1,23 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { UserContext } from '../context/UserContext';
 
 function Subjects() {
     const [subjects, setSubjects] = useState([]);
     const [newSubject, setNewSubject] = useState('');
+    const { userID } = useContext(UserContext);
 
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/subjects');
-                setSubjects(response.data);
+                const response = await axios.get(`http://localhost:4000/api/subjects/${userID}`);
+                if (Array.isArray(response.data)) {
+                    setSubjects(response.data); // Set the subjects only if it's an array
+                } else {
+                    setSubjects([]); // Ensure subjects is set to an empty array if the response data is not an array
+                }
             } catch (error) {
                 console.error('Error fetching subjects:', error);
                 alert('Failed to load subjects. Please try again later.');
+                setSubjects([]); // Set to empty array in case of error
             }
         };
 
-        fetchSubjects();
-    }, []);
+        if (userID) {
+            fetchSubjects(); // Fetch subjects only if userID is available
+        }
+    }, [userID]);
 
     const handleAddSubject = async () => {
         if (!newSubject) {
@@ -26,8 +35,9 @@ function Subjects() {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/api/subjects', {
+            const response = await axios.post('http://localhost:4000/api/subjects', {
                 name: newSubject,
+                userId: userID, // Include the userID when adding a new subject
             });
 
             if (response.data.success) {
