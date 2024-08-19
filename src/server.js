@@ -20,6 +20,14 @@ const UserSchema = new mongoose.Schema({
 // Create a User model
 const User = mongoose.model('User', UserSchema);
 
+// Define a Subject schema
+const SubjectSchema = new mongoose.Schema({
+    name: String,
+});
+
+// Create a Subject model
+const Subject = mongoose.model('Subject', SubjectSchema);
+
 // Login route
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
@@ -38,6 +46,30 @@ app.post('/api/login', async (req, res) => {
 
     // If login is successful
     res.json({ success: true, message: 'Login successful.' });
+});
+
+// Endpoint to fetch all subjects
+app.get('/api/subjects', async (req, res) => {
+    try {
+        const subjects = await Subject.find();
+        res.json(subjects);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch subjects' });
+    }
+});
+
+// Endpoint to add a new subject
+app.post('/api/subjects', async (req, res) => {
+    const { name } = req.body;
+
+    try {
+        const newSubject = new Subject({ name });
+        await newSubject.save();
+
+        res.json({ success: true, subject: newSubject });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to add subject' });
+    }
 });
 
 // Start the server
