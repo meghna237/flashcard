@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const history = useHistory(); // Use useHistory hook to navigate
+    const history = useNavigate(); // Use useHistory hook to navigate
 
     const handleSubmit = async (e) => {
         e.preventDefault();

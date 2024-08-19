@@ -9,7 +9,7 @@ app.use(cors()); // Enable CORS for cross-origin requests
 app.use(express.json()); // Parse JSON bodies
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/your_database', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('MONGODB_URL', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Define a User schema
 const UserSchema = new mongoose.Schema({
@@ -18,15 +18,24 @@ const UserSchema = new mongoose.Schema({
 });
 
 // Create a User model
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('users', UserSchema);
+
+const QuestionSchema = new mongoose.Schema({
+    question: String,
+    answer: String,
+    subject: {type: mongoose.Schema.Types.ObjectId, ref: 'subjects'}
+});
+
+const Question = mongoose.model('questions', QuestionSchema);
 
 // Define a Subject schema
 const SubjectSchema = new mongoose.Schema({
     name: String,
+    user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'}
 });
 
 // Create a Subject model
-const Subject = mongoose.model('Subject', SubjectSchema);
+const Subject = mongoose.model('subjects', SubjectSchema);
 
 // Login route
 app.post('/api/login', async (req, res) => {
@@ -69,6 +78,28 @@ app.post('/api/subjects', async (req, res) => {
         res.json({ success: true, subject: newSubject });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to add subject' });
+    }
+});
+
+app.get('/api/flashcards', async (req, res) => {
+    try {
+        const flashcards = await Question.find();
+        res.json(flashcards);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch flashcards' });
+    }
+});
+
+app.post('/api/flashcards', async (req, res) => {
+    const { question, answer } = req.body;
+
+    try {
+        const newFlashcard = new Question({ question, answer });
+        await newFlashcard.save();
+
+        res.json({ success: true, flashcard: newFlashcard });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to add flashcard' });
     }
 });
 
