@@ -1,31 +1,33 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom'; // Use `useNavigate` if using React Router v6
 
 function Subjects() {
     const [subjects, setSubjects] = useState([]);
     const [newSubject, setNewSubject] = useState('');
     const { userID } = useContext(UserContext);
+    const navigate = useNavigate(); // Use `useNavigate` if using React Router v6
 
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
                 const response = await axios.get(`http://localhost:4000/api/subjects/${userID}`);
+
                 if (Array.isArray(response.data)) {
-                    setSubjects(response.data); // Set the subjects only if it's an array
+                    setSubjects(response.data);
                 } else {
-                    setSubjects([]); // Ensure subjects is set to an empty array if the response data is not an array
+                    setSubjects([]);
                 }
             } catch (error) {
                 console.error('Error fetching subjects:', error);
                 alert('Failed to load subjects. Please try again later.');
-                setSubjects([]); // Set to empty array in case of error
+                setSubjects([]);
             }
         };
 
-        if (userID) {
-            fetchSubjects(); // Fetch subjects only if userID is available
-        }
+        fetchSubjects();
+        
     }, [userID]);
 
     const handleAddSubject = async () => {
@@ -37,12 +39,12 @@ function Subjects() {
         try {
             const response = await axios.post('http://localhost:4000/api/subjects', {
                 name: newSubject,
-                userId: userID, // Include the userID when adding a new subject
+                userId: userID,
             });
 
             if (response.data.success) {
-                setSubjects([...subjects, response.data.subject]); // Add the new subject to the list
-                setNewSubject(''); // Clear the input field
+                setSubjects([...subjects, response.data.subject]);
+                setNewSubject('');
             } else {
                 alert('Failed to add subject.');
             }
@@ -51,6 +53,11 @@ function Subjects() {
             alert('An error occurred. Please try again later.');
         }
     };
+
+    const handleSubjectClick = (subjectId) => {
+        navigate('/questions', { state: { subjectId } });
+    };
+      
 
     return (
         <div>
@@ -67,17 +74,12 @@ function Subjects() {
                 </div>
             </div>
             {subjects.map((subject) => (
-                <button key={subject._id} onClick={() => handleSubjectClick(subject.name)}>
+                <button key={subject._id} onClick={() => handleSubjectClick(subject._id)}>
                     {subject.name}
                 </button>
             ))}
         </div>
     );
 }
-
-const handleSubjectClick = (subjectName) => {
-    alert(`You selected ${subjectName}`);
-    // Implement further actions on subject click, such as redirecting to another page
-};
 
 export default Subjects;

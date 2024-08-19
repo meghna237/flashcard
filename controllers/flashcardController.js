@@ -1,6 +1,4 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-// Correct import based on the provided model file
 const { usersModel, questionsModel, subjectsModel } = require('../models/flashcardModel');
 require('dotenv').config();
 
@@ -21,11 +19,8 @@ const login = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid username or password.' });
         }
 
-        // Generate a JWT token
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        // Send the token to the client
-        res.json({ success: true, token: token });
+        // Send success response with userID
+        res.json({ success: true, userID: user._id });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ success: false, message: error.message });
@@ -55,37 +50,40 @@ const signup = async (req, res) => {
         // Save the user to the database
         await newUser.save();
 
-        // Generate a JWT token
-        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        // Send the token to the client
-        res.json({ success: true, token: token });
+        // Send success response with userID
+        res.json({ success: true, userID: newUser._id });
     } catch (error) {
         console.error('Signup error:', error);
         res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
     }
 };
 
-//function to get the list of subjects
+// Function to get the list of subjects
 const getSubjects = async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const subjects = await subjectsModel.find({ user: userId });
-        res.json(subjects);
+        const { userID } = req.query; // Expect userID in query params
+        const subjects = await subjectsModel.find({ user: userID });
+
+        if (!subjects || subjects.length === 0) {
+            console.log('Subject list empty');
+        }
+
+        res.status(200).json(subjects);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch subjects', error });
+        console.error('Error fetching subjects:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
 
 // Add subjects function
 const addSubject = async (req, res) => {
     try {
-        const { name, user } = req.body;
+        const { name, userID } = req.body; // Expect userID in the request body
         if (!name) {
             return res.status(400).json({ success: false, message: 'Subject name not entered' });
         }
 
-        const newSubject = new subjectsModel({ name, user });
+        const newSubject = new subjectsModel({ name, user: userID });
         await newSubject.save();
 
         res.status(201).json({ success: true, subject: newSubject });
@@ -95,9 +93,68 @@ const addSubject = async (req, res) => {
     }
 };
 
+// Fetch flashcards by subjectId
+const getFlashcardsBySubject = async (req, res) => {
+    try {
+        const { subject } = req.query;
+        console.log(req.query);
+
+        if (!subject) {
+            return res.status(400).json({ success: false, message: 'Subject ID is required' });
+        }
+
+        const flashcards = await questionsModel.find({ subject: subject });
+
+        res.status(200).json(flashcards);
+    } catch (error) {
+        console.error('Error fetching flashcards:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+// Add a new flashcard
+const addFlashcard = async (req, res) => {
+    try {
+        const { question, answer, subject } = req.body;
+
+        if (!question || !answer || !subject) {
+            return res.status(400).json({ success: false, message: 'Question, answer, and subject ID are required' });
+        }
+
+        const newFlashcard = new questionsModel({ question, answer, subject });
+        await newFlashcard.save();
+
+        res.status(201).json({ success: true, flashcard: newFlashcard });
+    } catch (error) {
+        console.error('Error adding flashcard:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+// Delete a flashcard by ID
+const deleteFlashcard = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedFlashcard = await questionsModel.findByIdAndDelete(id);
+
+        if (!deletedFlashcard) {
+            return res.status(404).json({ success: false, message: 'Flashcard not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Flashcard deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting flashcard:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
 module.exports = {
     login,
     signup,
     addSubject,
-    getSubjects
+    getSubjects,
+    getFlashcardsBySubject,
+    addFlashcard,
+    deleteFlashcard,
 };

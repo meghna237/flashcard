@@ -14,11 +14,11 @@ function Login() {
         e.preventDefault();
 
         try {
-            const response = await axios.post(('http://localhost:4000/api/login'), {
-                username: username,
-                password: password,
+            const response = await axios.post('http://localhost:4000/api/login', {
+                username,
+                password,
             });
-
+            console.log(response.data.userID);
             if (response.data.success) {
                 setUserID(response.data.userID);
                 navigate('/subjects'); // Redirect to the subjects page on successful login

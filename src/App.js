@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import Flashcard from './components/Flashcard';
-import Review from './components/Review';
 import Subjects from './components/Subject';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
@@ -17,8 +16,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/home" element={<Home />} />
           <Route path="/subjects" element={<Subjects />} />
-          <Route path="/flashcards" element={<Flashcard />} />
-          <Route path="/review" element={<Review />} />
+          <Route path="/questions" element={<Flashcard />} />
         </Routes>
       </Router>
     </UserProvider>

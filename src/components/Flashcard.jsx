@@ -1,39 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import './styles/Flashcard.css';
-import Review from './Review.jsx'
+import { useLocation } from 'react-router-dom'; // Use `useLocation` to access the passed state
 
 function Flashcard() {
   const [flashcards, setFlashcards] = useState([]);
   const [revealedIndex, setRevealedIndex] = useState(null);
-  const [markedForReview, setMarkedForReview] = useState([]);
   const [newQuestion, setNewQuestion] = useState('');
   const [newAnswer, setNewAnswer] = useState('');
+  const [loading, setLoading] = useState(true); // Add loading state
+
+  const location = useLocation();
+  const subjectId = location.state?.subjectId; // Extract subjectId from the passed state
 
   useEffect(() => {
-    fetchFlashcards();
-  }, []);
+    const fetchFlashcards = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/api/questions?subject=${subjectId}`);
+        setFlashcards(response.data);
+      } catch (error) {
+        console.error('Error fetching flashcards:', error);
+      } finally {
+        setLoading(false); // Set loading to false after data fetch
+      }
+    };
 
-  const fetchFlashcards = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/flashcards');
-      setFlashcards(response.data);
-    } catch (error) {
-      console.error('Error fetching flashcards:', error);
+    if (subjectId) {
+      fetchFlashcards();
     }
-  };
+  }, [subjectId]);
 
   const handleReveal = (index) => {
     setRevealedIndex(index === revealedIndex ? null : index);
-  };
-
-  const handleMarkForReview = (flashcard) => {
-    if (markedForReview.includes(flashcard._id)) {
-      setMarkedForReview(markedForReview.filter(id => id !== flashcard._id));
-    } else {
-      setMarkedForReview([...markedForReview, flashcard._id]);
-    }
   };
 
   const handleAddFlashcard = async () => {
@@ -43,14 +40,15 @@ function Flashcard() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/flashcards', {
+      const response = await axios.post('http://localhost:4000/api/addquestions', {
         question: newQuestion,
         answer: newAnswer,
+        subject: subjectId, // Include the subjectId when adding a new flashcard
       });
 
       if (response.data.success) {
-        setFlashcards([...flashcards, response.data.flashcard]); // Add the new flashcard to the list
-        setNewQuestion(''); // Clear the input fields
+        setFlashcards([...flashcards, response.data.flashcard]);
+        setNewQuestion('');
         setNewAnswer('');
       } else {
         alert('Failed to add flashcard.');
@@ -62,7 +60,7 @@ function Flashcard() {
 
   const handleDeleteFlashcard = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/flashcards/${id}`);
+      const response = await axios.delete(`http://localhost:4000/api/questions/${id}`);
 
       if (response.data.success) {
         setFlashcards(flashcards.filter(flashcard => flashcard._id !== id));
@@ -74,11 +72,11 @@ function Flashcard() {
     }
   };
 
-  if (!flashcards.length) return <p>Loading...</p>;
-
+  // Conditional rendering based on loading and flashcards length
   return (
     <div className="flashcard-container">
       <h1>Flashcards</h1>
+      
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <input 
@@ -96,29 +94,27 @@ function Flashcard() {
           <button onClick={handleAddFlashcard}>Add Flashcard</button>
         </div>
       </div>
-      {flashcards.map((flashcard, index) => (
-        <div key={flashcard._id} className="flashcard">
-          <h2>{flashcard.question}</h2>
-          {revealedIndex === index && <p>{flashcard.answer}</p>}
-          <button onClick={() => handleReveal(index)}>
-            {revealedIndex === index ? 'Hide Answer' : 'Reveal Answer'}
-          </button>
-          <button onClick={() => handleMarkForReview(flashcard)}>
-            {markedForReview.includes(flashcard._id) ? 'Unmark for Review' : 'Mark for Review'}
-          </button>
-          <button onClick={() => handleDeleteFlashcard(flashcard._id)}>
-            Delete
-          </button>
-        </div>
-      ))}
-      <Link
-        to={{
-          pathname: '/review',
-          state: { markedForReview: Review() }, // Pass marked flashcards
-        }}
-      >
-        <button>Go to Review</button>
-      </Link>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        flashcards.length === 0 ? (
+          <p>No flashcards available. Please add some questions.</p>
+        ) : (
+          flashcards.map((flashcard, index) => (
+            <div key={flashcard._id} className="flashcard">
+              <h2>{flashcard.question}</h2>
+              {revealedIndex === index && <p>{flashcard.answer}</p>}
+              <button onClick={() => handleReveal(index)}>
+                {revealedIndex === index ? 'Hide Answer' : 'Reveal Answer'}
+              </button>
+              <button onClick={() => handleDeleteFlashcard(flashcard._id)}>
+                Delete
+              </button>
+            </div>
+          ))
+        )
+      )}
     </div>
   );
 }
