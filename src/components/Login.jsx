@@ -6,19 +6,19 @@ import './Login.css'
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const history = useNavigate(); // Use useHistory hook to navigate
+    const navigate = useNavigate(); // Use useHistory hook to navigate
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(('/api/login'), {
+            const response = await axios.post(('http://localhost:4000/api/login'), {
                 username: username,
                 password: password,
             });
 
             if (response.data.success) {
-                history.push('/subjects'); // Redirect to the subjects page on successful login
+                navigate('/subjects'); // Redirect to the subjects page on successful login
             } else {
                 alert('Login failed. Please check your username and password.');
             }
@@ -26,6 +26,10 @@ function Login() {
             console.error('There was an error logging in!', error);
             alert('An error occurred. Please try again later.');
         }
+    };
+
+    const handleSignUpRedirect = () => {
+        navigate('/signup'); // Redirect to the sign-up page
     };
 
     return (
@@ -47,7 +51,9 @@ function Login() {
                     onChange={(e) => setPassword(e.target.value)} 
                 /><br />
                 <button type="submit">Login</button>
-            </form>
+            </form><br />
+            <p>Do not have an account? Sign Up below</p><br></br>
+            <button onClick={handleSignUpRedirect}>Sign Up</button>
         </div>
     );
 }

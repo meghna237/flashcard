@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/usersModel');
+require('dotenv').config();
 
 // Login function
 const login = async (req, res) => {
@@ -26,7 +27,7 @@ const login = async (req, res) => {
         res.json({ success: true, token: token });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 
-const conn = require('../services/db');
+const conn = require('../src/services/db');
 conn.dbConnection();
 
 const SubjectSchema = new Schema({

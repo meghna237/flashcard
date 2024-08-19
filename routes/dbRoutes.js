@@ -2,8 +2,8 @@
 const router = require('express').Router();
 const loginController = require('../controllers/loginController');
 
-router.post('/api/login', loginController.login);
-router.post('/api/signup', loginController.signup);
+router.post('/login', loginController.login);
+router.post('/signup', loginController.signup);
 
 
 
