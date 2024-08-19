@@ -5,12 +5,14 @@ import Flashcard from './components/Flashcard';
 import Review from './components/Review';
 import Subjects from './components/Subject';
 import Login from './components/Login';
+import SignUp from './components/SignUp';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route exact path="/" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/home" element={<Home />} />
         <Route path="/subjects" element={<Subjects />} />
         <Route path="/flashcards" element={<Flashcard />} />
