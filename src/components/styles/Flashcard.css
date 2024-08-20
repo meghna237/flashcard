@@ -1,53 +1,25 @@
 .flashcard-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-y: auto;
-  max-height: 100vh; 
-  padding: 20px;
-  background-color: #d3b596;
-}
- 
-.flashcard-container h1 {
-  font-size: 40px;
+  background-color: #d3b596; /* Change this to your desired color */
+  padding: 20px; /* Add padding for better spacing */
+  height: 100vh; /* Set height to fill the viewport */
+  display: flex; /* Use flexbox for centering content */
+  flex-direction: column; /* Stack children vertically */
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
 }
 
-.flashcard {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 50px;
-  margin: 10px;
-  width: 500px; /* Set a fixed width for cards */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s;
-}
-  
-.flashcard:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-  
-button {
-  margin-top: 10px;
-  margin: 20px;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #784a18;
-  color: #F8F4E1;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-  
-button:hover {
-  background-color: #301e08;
+#new-qn {
+  width: 450px;
+  padding: 5px;
 }
 
-.flashcard h2{
-  font-size: 27px;
+#new-ans{
+  width: 200px;
+  padding: 5px;
+  margin-left: 10px;
 }
 
-.flashcard p {
-  font-size: 20px;
+.flash-btn {
+  font-size: 18px;
+  margin-bottom: 20px;
 }
